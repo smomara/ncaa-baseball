@@ -1,7 +1,7 @@
 # NCAA Baseball
 
 Haskell library for accessing NCAA baseball statistics.
-Fetches data by scraping the NCAA's [public statistics site](stats.ncaa.org).
+Fetches data by scraping the NCAA's [public statistics site](https://stats.ncaa.org).
 
 ## Usage
 
