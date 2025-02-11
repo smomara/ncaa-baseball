@@ -10,19 +10,14 @@ module NCAA.Baseball.Teams (
   getTeamsByDivision,
 
   -- * Helper types and functions
-  Year,
-  TeamId,
   TeamName,
 ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import Network.HTTP.Simple
+import NCAA.Baseball.Internal
 import Text.HTML.Scalpel
 
-type Year = Int
-type TeamId = Text
 type TeamName = Text
 
 data Team = Team
@@ -54,14 +49,6 @@ buildTeamUrl division year =
     <> divisionToText division
     <> "&academic_year="
     <> T.pack (show year)
-
-fetchHtml :: Text -> IO (Maybe Text)
-fetchHtml url = do
-  request <- parseRequest (T.unpack url)
-  response <- httpBS request
-  pure $ case TE.decodeUtf8' (getResponseBody response) of
-    Left _ -> Nothing
-    Right body -> Just body
 
 scrapeTeams :: Text -> Maybe [Team]
 scrapeTeams body = scrapeStringLike body teams

@@ -11,7 +11,6 @@ build-type:         Simple
 
 common common-extensions
     default-language:   Haskell2010
-    default-extensions: OverloadedStrings
 
 common common-ghc-options
     ghc-options:  -Wall -O2
@@ -20,10 +19,11 @@ library
     import:           common-ghc-options
                     , common-extensions
     exposed-modules:  NCAA.Baseball.Teams
+                    , NCAA.Baseball.Teams.Roster
+    other-modules:    NCAA.Baseball.Internal
     build-depends:    base ^>=4.18.2.1
                     , text
                     , bytestring
                     , http-conduit
                     , scalpel
-    hs-source-dirs:   lib
-    default-language: Haskell2010
+    hs-source-dirs:   src
