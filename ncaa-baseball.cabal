@@ -1,0 +1,29 @@
+cabal-version:      3.0
+name:               ncaa-baseball
+version:            0.1.0.0
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Sean O'Mara
+maintainer:         mseanomara@gmail.com
+category:           Sports
+synopsis:           Library for accessing NCAA baseball statistics
+build-type:         Simple
+
+common common-extensions
+    default-language:   Haskell2010
+    default-extensions: OverloadedStrings
+
+common common-ghc-options
+    ghc-options:  -Wall -O2
+
+library
+    import:           common-ghc-options
+                    , common-extensions
+    exposed-modules:  NCAA.Baseball.Teams
+    build-depends:    base ^>=4.18.2.1
+                    , text
+                    , bytestring
+                    , http-conduit
+                    , scalpel
+    hs-source-dirs:   lib
+    default-language: Haskell2010
