@@ -8,6 +8,8 @@ module NCAA.Baseball.Teams.Roster (
   getRoster,
 ) where
 
+import Data.List (nub)
+import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import qualified Data.Text as T
 import NCAA.Baseball.Internal
@@ -35,15 +37,15 @@ getRoster tid = do
   pure $ body >>= scrapeRoster
 
 buildRosterUrl :: TeamId -> Text
-buildRosterUrl tid = "https://stats.ncaa.org/teams/" <> tid <> "/roster"
+buildRosterUrl tid = baseUrl <> "/teams/" <> tid <> "/roster"
 
 scrapeRoster :: Text -> Maybe [Player]
 scrapeRoster body = scrapeStringLike body $ do
   rows <- chroots rosterSelector playerRows
   hrefs <- chroots rosterSelector playerHrefs
-  let uniqueRows = take (length rows `div` 2) rows
-      playerIds = [extractPlayerId href | href <- hrefs, isPlayerHref href]
-  pure $ zipWith makePlayer uniqueRows playerIds
+  let playerIds = [extractPlayerId href | href <- hrefs, isPlayerHref href]
+      players = catMaybes $ zipWith makePlayer rows playerIds
+  pure $ nub players
  where
   rosterSelector = "table" // "tbody" // "tr"
   playerRows = texts "td"
@@ -53,21 +55,22 @@ scrapeRoster body = scrapeStringLike body $ do
   extractPlayerId = last . T.splitOn "/"
 
   makePlayer [gp, gs, num, name, cls, pos, hgt, bats, throws, town, hs] pid =
-    Player
-      { playerName = name
-      , playerId = pid
-      , playerNumber = validateField num
-      , playerClass = validateField cls
-      , playerPosition = validateField pos
-      , playerHeight = validateField hgt
-      , playerBats = validateField $ T.strip bats
-      , playerThrows = validateField $ T.strip throws
-      , playerHometown = validateField town
-      , playerHighSchool = validateField hs
-      , gamesPlayed = textToMaybeInt gp
-      , gamesStarted = textToMaybeInt gs
-      }
-  makePlayer _ _ = error "Invalid row length"
+    Just $
+      Player
+        { playerName = name
+        , playerId = pid
+        , playerNumber = validateField num
+        , playerClass = validateField cls
+        , playerPosition = validateField pos
+        , playerHeight = validateField hgt
+        , playerBats = validateField $ T.strip bats
+        , playerThrows = validateField $ T.strip throws
+        , playerHometown = validateField town
+        , playerHighSchool = validateField hs
+        , gamesPlayed = textToMaybeInt gp
+        , gamesStarted = textToMaybeInt gs
+        }
+  makePlayer _ _ = Nothing
 
 validateField :: Text -> Maybe Text
 validateField = clean . T.strip

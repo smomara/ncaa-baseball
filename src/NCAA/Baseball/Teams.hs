@@ -13,6 +13,7 @@ module NCAA.Baseball.Teams (
   TeamName,
 ) where
 
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import NCAA.Baseball.Internal
@@ -28,24 +29,26 @@ data Team = Team
 
 data Division = Division1 | Division2 | Division3 deriving (Show, Eq, Enum, Bounded)
 
-getTeams :: Year -> IO (Maybe [Team])
+getTeams :: Year -> IO [Team]
 getTeams year = do
   let divisions = [minBound .. maxBound] :: [Division]
   teams <- mapM (`getTeamsByDivision` year) divisions
-  pure $ concat <$> sequence teams
+  pure $ concat teams
 
-getTeamsByDivision :: Division -> Year -> IO (Maybe [Team])
+getTeamsByDivision :: Division -> Year -> IO [Team]
 getTeamsByDivision division year = do
-  body <- fetchHtml $ buildTeamUrl division year
-  pure $ body >>= scrapeTeams
+  maybeBody <- fetchHtml $ buildTeamUrl division year
+  pure $ fromMaybe [] (maybeBody >>= scrapeTeams)
 
 divisionToText :: Division -> Text
-divisionToText = T.pack . show . (+ 1) . fromEnum
+divisionToText Division1 = "1"
+divisionToText Division2 = "2"
+divisionToText Division3 = "3"
 
 buildTeamUrl :: Division -> Int -> Text
 buildTeamUrl division year =
-  "https://stats.ncaa.org/team/inst_team_list?sport_code=MBA"
-    <> "&division="
+  baseUrl
+    <> "/team/inst_team_list?sport_code=MBA&division="
     <> divisionToText division
     <> "&academic_year="
     <> T.pack (show year)

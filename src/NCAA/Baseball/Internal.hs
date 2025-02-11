@@ -9,6 +9,9 @@ import Text.HTML.Scalpel
 type TeamId = Text
 type Year = Int
 
+baseUrl :: Text
+baseUrl = T.pack "https://stats.ncaa.org"
+
 fetchHtml :: Text -> IO (Maybe Text)
 fetchHtml url = do
   request <- parseRequest (T.unpack url)
