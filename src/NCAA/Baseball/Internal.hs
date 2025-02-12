@@ -7,7 +7,24 @@ import Network.HTTP.Simple
 import Text.HTML.Scalpel
 
 type TeamId = Text
+type PlayerId = Text
 type Year = Int
+
+data Player = Player
+  { playerName :: Text
+  , playerId :: PlayerId
+  , playerNumber :: Maybe Text
+  , playerClass :: Maybe Text
+  , playerPosition :: Maybe Text
+  , playerHeight :: Maybe Text
+  , playerBats :: Maybe Text
+  , playerThrows :: Maybe Text
+  , playerHometown :: Maybe Text
+  , playerHighSchool :: Maybe Text
+  } deriving (Show)
+
+instance Eq Player where
+  a == b = playerId a == playerId b
 
 baseUrl :: Text
 baseUrl = T.pack "https://stats.ncaa.org"

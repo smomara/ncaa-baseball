@@ -15,20 +15,6 @@ import qualified Data.Text as T
 import NCAA.Baseball.Internal
 import Text.HTML.Scalpel
 
-data Player = Player
-  { playerName :: Text
-  , playerId :: Text
-  , playerNumber :: Maybe Text
-  , playerClass :: Maybe Text
-  , playerPosition :: Maybe Text
-  , playerHeight :: Maybe Text
-  , playerBats :: Maybe Text
-  , playerThrows :: Maybe Text
-  , playerHometown :: Maybe Text
-  , playerHighSchool :: Maybe Text
-  }
-  deriving (Show, Eq)
-
 getRoster :: TeamId -> IO (Maybe [Player])
 getRoster tid = do
   body <- fetchHtml $ buildRosterUrl tid

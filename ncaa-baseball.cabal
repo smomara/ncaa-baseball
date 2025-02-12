@@ -18,12 +18,15 @@ common common-ghc-options
 library
     import:           common-ghc-options
                     , common-extensions
-    exposed-modules:  NCAA.Baseball.Teams
+    exposed-modules:  NCAA.Baseball
+                    , NCAA.Baseball.Teams
                     , NCAA.Baseball.Teams.Roster
+                    , NCAA.Baseball.Teams.Stats
     other-modules:    NCAA.Baseball.Internal
     build-depends:    base ^>=4.18.2.1
                     , text
                     , bytestring
                     , http-conduit
                     , scalpel
+                    , containers
     hs-source-dirs:   src
