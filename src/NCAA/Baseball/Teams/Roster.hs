@@ -26,8 +26,6 @@ data Player = Player
   , playerThrows :: Maybe Text
   , playerHometown :: Maybe Text
   , playerHighSchool :: Maybe Text
-  , gamesPlayed :: Maybe Int
-  , gamesStarted :: Maybe Int
   }
   deriving (Show, Eq)
 
@@ -54,7 +52,9 @@ scrapeRoster body = scrapeStringLike body $ do
   isPlayerHref = T.isPrefixOf "/players/"
   extractPlayerId = last . T.splitOn "/"
 
-  makePlayer [gp, gs, num, name, cls, pos, hgt, bats, throws, town, hs] pid =
+  -- the two blank fields are games played and games started, respectively
+  -- we don't handle them here because they are not core to the player's identity
+  makePlayer [_, _, num, name, cls, pos, hgt, bats, throws, town, hs] pid =
     Just $
       Player
         { playerName = name
@@ -67,8 +67,6 @@ scrapeRoster body = scrapeStringLike body $ do
         , playerThrows = validateField $ T.strip throws
         , playerHometown = validateField town
         , playerHighSchool = validateField hs
-        , gamesPlayed = textToMaybeInt gp
-        , gamesStarted = textToMaybeInt gs
         }
   makePlayer _ _ = Nothing
 

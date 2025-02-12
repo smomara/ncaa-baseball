@@ -24,6 +24,8 @@ type TeamName = Text
 data Team = Team
   { teamName :: TeamName
   , teamId :: TeamId
+  , teamDivision :: Division
+  , teamYear :: Year
   }
   deriving (Show, Eq)
 
@@ -38,7 +40,7 @@ getTeams year = do
 getTeamsByDivision :: Division -> Year -> IO [Team]
 getTeamsByDivision division year = do
   maybeBody <- fetchHtml $ buildTeamUrl division year
-  pure $ fromMaybe [] (maybeBody >>= scrapeTeams)
+  pure $ fromMaybe [] (maybeBody >>= scrapeTeams division year)
 
 divisionToText :: Division -> Text
 divisionToText Division1 = "1"
@@ -53,13 +55,13 @@ buildTeamUrl division year =
     <> "&academic_year="
     <> T.pack (show year)
 
-scrapeTeams :: Text -> Maybe [Team]
-scrapeTeams body = scrapeStringLike body teams
+scrapeTeams :: Division -> Year -> Text -> Maybe [Team]
+scrapeTeams division year body = scrapeStringLike body teams
  where
   teams = chroots ("div" @: [hasClass "css-panes"] // "td" // "a") team
   team = do
     name <- text anySelector
     href <- attr "href" anySelector
     case T.splitOn "/" href of
-      (_ : "teams" : tid : _) -> pure $ Team name tid
+      (_ : "teams" : tid : _) -> pure $ Team name tid division year
       _ -> fail $ "Invalid team URL format: " <> T.unpack href
