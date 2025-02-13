@@ -14,7 +14,7 @@ initializeDB = do
   conn <- open "ncaa.db"
   execute_ conn "CREATE TABLE IF NOT EXISTS teams (name TEXT, teamId TEXT, division TEXT, year INT)"
   execute_ conn "CREATE TABLE IF NOT EXISTS players (name TEXT, playerId TEXT, teamId TEXT, number TEXT, class TEXT, position TEXT, height TEXT, bats TEXT, throws TEXT, hometown TEXT, highSchool TEXT)"
-  execute_ conn "CREATE TABLE IF NOT EXISTS hittingStats (playerId TEXT, battingAverage REAL, onBasePercentage REAL, sluggingPercentage REAL, runs INT, atBats INT, hits INT, doubles INT, triples INT, totalBases INT, homeRuns INT, rbis INT, walks INT, hitByPitch INT, sacrificeFlies INT, sacrificeHits INT, strikeouts INT, opponentDoublePlay INT, caughtStealing INT, pickedOff INT, stolenBases INT, intentionalWalks INT, groundedIntoDP INT, rbisWithTwoOuts INT)"
+  execute_ conn "CREATE TABLE IF NOT EXISTS hittingStats (playerId TEXT, teamId TEXT, battingAverage REAL, onBasePercentage REAL, sluggingPercentage REAL, runs INT, atBats INT, hits INT, doubles INT, triples INT, totalBases INT, homeRuns INT, rbis INT, walks INT, hitByPitch INT, sacrificeFlies INT, sacrificeHits INT, strikeouts INT, opponentDoublePlay INT, caughtStealing INT, pickedOff INT, stolenBases INT, intentionalWalks INT, groundedIntoDP INT, rbisWithTwoOuts INT)"
   close conn
 
 insertTeam :: Connection -> Team -> IO ()
@@ -24,7 +24,7 @@ insertPlayer :: Connection -> Player -> IO ()
 insertPlayer conn = execute conn "INSERT INTO players VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 insertHittingStats :: Connection -> HittingStats -> IO ()
-insertHittingStats conn = execute conn "INSERT INTO hittingStats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+insertHittingStats conn = execute conn "INSERT INTO hittingStats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 populateDBForYear :: Year -> IO ()
 populateDBForYear year = do

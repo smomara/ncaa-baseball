@@ -97,6 +97,7 @@ instance FromRow Player where
 
 data HittingStats = HittingStats
   { hittingStatsPlayerId :: Text
+  , hittingStatsTeamId :: Text
   , battingAverage :: Double
   , onBasePercentage :: Double
   , sluggingPercentage :: Double
@@ -124,8 +125,9 @@ data HittingStats = HittingStats
   deriving (Show)
 
 instance ToRow HittingStats where
-  toRow (HittingStats pid ba obp slg r ab h d t tb hr rbi bb hbp sf sh k dp cs po sb ibb gidp rbi2) =
+  toRow (HittingStats pid tid ba obp slg r ab h d t tb hr rbi bb hbp sf sh k dp cs po sb ibb gidp rbi2) =
     [ toField pid
+    , toField tid
     , toField ba
     , toField obp
     , toField slg
@@ -155,6 +157,7 @@ instance FromRow HittingStats where
   fromRow =
     HittingStats
       <$> field
+      <*> field
       <*> field
       <*> field
       <*> field

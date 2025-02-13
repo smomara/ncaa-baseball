@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 getTeamStats :: TeamId -> IO (Maybe TeamStats)
 getTeamStats tid = do
   body <- fetchHtml $ buildStatsUrl tid
-  pure $ body >>= scrapeStats
+  pure $ body >>= scrapeStats tid
 
 buildStatsUrl :: TeamId -> Text
 buildStatsUrl tid = baseUrl <> "/teams/" <> tid <> "/season_to_date_stats"
@@ -25,8 +25,8 @@ buildStatsUrl tid = baseUrl <> "/teams/" <> tid <> "/season_to_date_stats"
 lookupPlayerStats :: PlayerId -> TeamStats -> Maybe HittingStats
 lookupPlayerStats = M.lookup
 
-scrapeStats :: Text -> Maybe TeamStats
-scrapeStats body = do
+scrapeStats :: TeamId -> Text -> Maybe TeamStats
+scrapeStats tid body = do
   pairs <- scrapeStringLike body $ do
     rows <- chroots statsSelector statRows
     hrefs <- chroots statsSelector playerHrefs
@@ -50,6 +50,7 @@ scrapeStats body = do
       ( pid
       , HittingStats
           { hittingStatsPlayerId = pid
+          , hittingStatsTeamId = tid
           , battingAverage = maybeDouble ba
           , onBasePercentage = maybeDouble obp
           , sluggingPercentage = maybeDouble slg
