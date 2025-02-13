@@ -1,10 +1,11 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module NCAA.Baseball.Database where
 
 import Control.Concurrent.Async
 import Control.Exception (bracket)
-import Control.Monad (forM_, void)
+import Control.Monad (forM_)
 import Data.Foldable (for_)
 import Database.SQLite.Simple
 import NCAA.Baseball
@@ -29,19 +30,19 @@ insertHittingStats conn = execute conn "INSERT INTO hittingStats VALUES (?, ?, ?
 populateDBForYear :: Year -> IO ()
 populateDBForYear year = do
   teams <- getTeams year
-  void $ mapConcurrently processTeam teams
+  teamData <- mapConcurrently fetchTeamData teams
+  bracket (open "ncaa.db") close $ \conn ->
+    forM_ teamData $ \case
+      (team, Just roster, Just stats) -> do
+        insertTeam conn team
+        forM_ roster $ \player -> do
+          insertPlayer conn player
+          for_ (lookupPlayerStats (playerId player) stats) (insertHittingStats conn)
+      _ -> pure ()
  where
-  processTeam team = do
-    (maybeStats, maybeRoster) <-
+  fetchTeamData team = do
+    (stats, roster) <-
       concurrently
         (getTeamStats $ teamId team)
         (getRoster $ teamId team)
-
-    case (maybeRoster, maybeStats) of
-      (Just roster, Just stats) ->
-        bracket (open "ncaa.db") close $ \conn -> do
-          insertTeam conn team
-          forM_ roster $ \player -> do
-            insertPlayer conn player
-            for_ (lookupPlayerStats (playerId player) stats) (insertHittingStats conn)
-      _ -> pure ()
+    pure (team, roster, stats)
