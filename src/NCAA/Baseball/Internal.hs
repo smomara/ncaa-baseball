@@ -50,6 +50,7 @@ instance FromField Division where
 data Player = Player
   { playerName :: Text
   , playerId :: PlayerId
+  , playerTeamId :: TeamId
   , playerNumber :: Maybe Text
   , playerClass :: Maybe Text
   , playerPosition :: Maybe Text
@@ -65,13 +66,25 @@ instance Eq Player where
   a == b = playerId a == playerId b
 
 instance ToRow Player where
-  toRow (Player name pid num cls pos hgt bats throws town hs) =
-    toRow (name, pid, num, cls, pos, hgt, bats, throws, town, hs)
+  toRow (Player name pid tid num cls pos hgt bats throws town hs) =
+    [ toField name
+    , toField pid
+    , toField tid
+    , toField num
+    , toField cls
+    , toField pos
+    , toField hgt
+    , toField bats
+    , toField throws
+    , toField town
+    , toField hs
+    ]
 
 instance FromRow Player where
   fromRow =
     Player
       <$> field
+      <*> field
       <*> field
       <*> field
       <*> field

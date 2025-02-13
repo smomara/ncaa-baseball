@@ -18,13 +18,13 @@ import Text.HTML.Scalpel
 getRoster :: TeamId -> IO (Maybe [Player])
 getRoster tid = do
   body <- fetchHtml $ buildRosterUrl tid
-  pure $ body >>= scrapeRoster
+  pure $ body >>= scrapeRoster tid
 
 buildRosterUrl :: TeamId -> Text
 buildRosterUrl tid = baseUrl <> "/teams/" <> tid <> "/roster"
 
-scrapeRoster :: Text -> Maybe [Player]
-scrapeRoster body = scrapeStringLike body $ do
+scrapeRoster :: TeamId -> Text -> Maybe [Player]
+scrapeRoster tid body = scrapeStringLike body $ do
   rows <- chroots rosterSelector playerRows
   hrefs <- chroots rosterSelector playerHrefs
   let playerIds = [extractPlayerId href | href <- hrefs, isPlayerHref href]
@@ -45,6 +45,7 @@ scrapeRoster body = scrapeStringLike body $ do
       Player
         { playerName = name
         , playerId = pid
+        , playerTeamId = tid
         , playerNumber = validateField num
         , playerClass = validateField cls
         , playerPosition = validateField pos
