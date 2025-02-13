@@ -143,13 +143,13 @@ The data is stored in three tables:
 ```
 ncaa-baseball/
 ├── app/                    # Executable source
-│   └── Main.hs            # Database population tool
-├── src/                   # Library source
+│   └── Main.hs             # Database population tool
+├── src/                    # Library source
 │   └── NCAA/
-│       └── Baseball/      # Core modules
-├── ncaa-baseball.cabal    # Project configuration
-├── flake.nix             # Nix configuration
-└── README.md             # This file
+│       └── Baseball/       # Core modules
+├── ncaa-baseball.cabal     # Project configuration
+├── flake.nix               # Nix configuration
+└── README.md               # This file
 ```
 
 ## Development
