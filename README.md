@@ -8,6 +8,7 @@ Fetches data by scraping the NCAA's [public statistics site](https://stats.ncaa.
 - Access team rosters and player information
 - Fetch hitting statistics
 - Combine roster and stats information
+- Store data in SQLite database for cached offline access
 
 ## Usage
 
@@ -70,6 +71,19 @@ case completeRoster of
             putStrLn $ playerName (cpInfo player) <> 
                       ": " <> show (battingAverage $ cpStats player)
     Nothing -> putStrLn "Failed to get complete roster"
+```
+
+### Database Storage
+```haskell
+import NCAA.Baseball
+import NCAA.Baseball.Database
+
+-- Initialize database tables
+initializeDB
+
+-- Populate database with all teams, rosters, and stats for a given year
+-- This fetches data concurrently for better performance
+populateDBForYear 2024
 ```
 
 ## Development
