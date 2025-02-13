@@ -33,3 +33,12 @@ library
                     , sqlite-simple
                     , async
     hs-source-dirs:   src
+
+executable ncaa-db
+    import:           common-ghc-options
+                    , common-extensions
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    ghc-options:      -with-rtsopts=-N
+    build-depends:    base ^>=4.18.2.1
+                    , ncaa-baseball
