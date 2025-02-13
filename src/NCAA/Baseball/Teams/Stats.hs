@@ -1,16 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module NCAA.Baseball.Teams.Stats (
-  -- * Types
-  HittingStats (..),
-  TeamStats,
-
   -- * Queries
   getTeamStats,
   lookupPlayerStats,
 ) where
 
-import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.Text (Text)
@@ -18,35 +13,6 @@ import qualified Data.Text as T
 import NCAA.Baseball.Internal
 import Text.HTML.Scalpel
 import Text.Read (readMaybe)
-
-type TeamStats = Map PlayerId HittingStats
-
-data HittingStats = HittingStats
-  { battingAverage :: Double
-  , onBasePercentage :: Double
-  , sluggingPercentage :: Double
-  , runs :: Int
-  , atBats :: Int
-  , hits :: Int
-  , doubles :: Int
-  , triples :: Int
-  , totalBases :: Int
-  , homeRuns :: Int
-  , rbis :: Int
-  , walks :: Int
-  , hitByPitch :: Int
-  , sacrificeFlies :: Int
-  , sacrificeHits :: Int
-  , strikeouts :: Int
-  , opponentDoublePlay :: Int
-  , caughtStealing :: Int
-  , pickedOff :: Int
-  , stolenBases :: Int
-  , intentionalWalks :: Int
-  , groundedIntoDP :: Int
-  , rbisWithTwoOuts :: Int
-  }
-  deriving (Show)
 
 getTeamStats :: TeamId -> IO (Maybe TeamStats)
 getTeamStats tid = do
@@ -83,7 +49,8 @@ scrapeStats body = do
     Just
       ( pid
       , HittingStats
-          { battingAverage = maybeDouble ba
+          { hittingStatsPlayerId = pid
+          , battingAverage = maybeDouble ba
           , onBasePercentage = maybeDouble obp
           , sluggingPercentage = maybeDouble slg
           , runs = maybeInt r

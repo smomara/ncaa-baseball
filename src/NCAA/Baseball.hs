@@ -26,7 +26,7 @@ module NCAA.Baseball (
   Year
 ) where
 
-import NCAA.Baseball.Internal (PlayerId, TeamId, Year)
+import NCAA.Baseball.Internal
 import NCAA.Baseball.Teams
 import NCAA.Baseball.Teams.Roster
 import NCAA.Baseball.Teams.Stats

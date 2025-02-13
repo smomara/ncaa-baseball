@@ -1,16 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module NCAA.Baseball.Teams (
-  -- * Types
-  Team (..),
-  Division (..),
-
   -- * Main functions
   getTeams,
   getTeamsByDivision,
-
-  -- * Helper types and functions
-  TeamName,
 ) where
 
 import Data.Maybe (fromMaybe)
@@ -18,18 +11,6 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import NCAA.Baseball.Internal
 import Text.HTML.Scalpel
-
-type TeamName = Text
-
-data Team = Team
-  { teamName :: TeamName
-  , teamId :: TeamId
-  , teamDivision :: Division
-  , teamYear :: Year
-  }
-  deriving (Show, Eq)
-
-data Division = Division1 | Division2 | Division3 deriving (Show, Eq, Enum, Bounded)
 
 getTeams :: Year -> IO [Team]
 getTeams year = do

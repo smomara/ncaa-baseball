@@ -13,7 +13,7 @@ common common-extensions
     default-language:   Haskell2010
 
 common common-ghc-options
-    ghc-options:  -Wall -O2
+    ghc-options:  -Wall -O2 -threaded
 
 library
     import:           common-ghc-options
@@ -22,6 +22,7 @@ library
                     , NCAA.Baseball.Teams
                     , NCAA.Baseball.Teams.Roster
                     , NCAA.Baseball.Teams.Stats
+                    , NCAA.Baseball.Database
     other-modules:    NCAA.Baseball.Internal
     build-depends:    base ^>=4.18.2.1
                     , text
@@ -29,4 +30,6 @@ library
                     , http-conduit
                     , scalpel
                     , containers
+                    , sqlite-simple
+                    , async
     hs-source-dirs:   src
