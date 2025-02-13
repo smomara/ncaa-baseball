@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module NCAA.Baseball.Database where
@@ -30,19 +29,16 @@ insertHittingStats conn = execute conn "INSERT INTO hittingStats VALUES (?, ?, ?
 populateDBForYear :: Year -> IO ()
 populateDBForYear year = do
   teams <- getTeams year
-  teamData <- mapConcurrently fetchTeamData teams
   bracket (open "ncaa.db") close $ \conn ->
-    forM_ teamData $ \case
-      (team, Just roster, Just stats) -> do
-        insertTeam conn team
-        forM_ roster $ \player -> do
-          insertPlayer conn player
-          for_ (lookupPlayerStats (playerId player) stats) (insertHittingStats conn)
-      _ -> pure ()
- where
-  fetchTeamData team = do
-    (stats, roster) <-
-      concurrently
-        (getTeamStats $ teamId team)
-        (getRoster $ teamId team)
-    pure (team, roster, stats)
+    forM_ teams $ \team -> do
+      (stats, roster) <-
+        concurrently
+          (getTeamStats $ teamId team)
+          (getRoster $ teamId team)
+      case (roster, stats) of
+        (Just r, Just s) -> do
+          insertTeam conn team
+          forM_ r $ \player -> do
+            insertPlayer conn player
+            for_ (lookupPlayerStats (playerId player) s) (insertHittingStats conn)
+        _ -> pure ()
