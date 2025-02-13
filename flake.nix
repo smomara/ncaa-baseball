@@ -15,10 +15,16 @@
       {
         packages.default = package;
         packages.${packageName} = package;
+
+        apps.default = {
+          type = "app";
+          program = "${package}/bin/ncaa-db";
+        };
         
         devShells.default = (pkgs.haskell.lib.addBuildTools package [
           haskellPackages.cabal-install
           haskellPackages.haskell-language-server
+          pkgs.sqlite
         ]).env;
       });
 }
