@@ -8,9 +8,40 @@ Fetches data by scraping the NCAA's [public statistics site](https://stats.ncaa.
 - Access team rosters and player information
 - Fetch hitting statistics
 - Combine roster and stats information
-- Store data in SQLite database for cached offline access
+- Store data in SQLite database for offline access
 
-## Usage
+## Installation & Usage
+
+### Using Nix
+
+The recommended way to use this package is with Nix:
+
+```bash
+# Development environment
+nix develop
+
+# Run the database population tool
+nix run
+
+# Install the package
+nix profile install github:smomara/ncaa-baseball
+```
+
+### Using Cabal
+
+If you prefer not to use Nix:
+
+```bash
+# Clone the repository
+git clone https://github.com/smomara/ncaa-baseball.git
+cd ncaa-baseball
+
+# Build and run
+cabal build
+cabal run ncaa-db
+```
+
+## Library Usage
 
 ### Working with Teams
 ```haskell
@@ -24,8 +55,8 @@ d1teams <- getTeamsByDivision Division1 2024
 
 -- Access team information
 let someTeam = head teams
-"Team: " <> teamName someTeam
-"ID: " <> teamId someTeam
+putStrLn $ "Team: " <> teamName someTeam
+putStrLn $ "ID: " <> teamId someTeam
 ```
 
 ### Accessing Rosters
@@ -86,9 +117,58 @@ initializeDB
 populateDBForYear 2024
 ```
 
-## Development
+## Database Population Tool
+
+The package includes an executable `ncaa-db` that will populate a SQLite database with all NCAA baseball data for the current year. To use it:
 
 ```bash
-# Enter development shell
-nix develop
+# Using Nix
+nix run
+
+# Or using Cabal
+cabal run ncaa-db
+
+# This will:
+# 1. Create ncaa.db if it doesn't exist
+# 2. Initialize required tables
+# 3. Fetch and store all teams, rosters, and stats
 ```
+
+The data is stored in three tables:
+- `teams`: Basic team information (name, ID, division, year)
+- `players`: Player roster information (name, ID, position, etc.)
+- `hittingStats`: Player statistics (batting stats)
+
+## Project Structure
+```
+ncaa-baseball/
+├── app/                    # Executable source
+│   └── Main.hs            # Database population tool
+├── src/                   # Library source
+│   └── NCAA/
+│       └── Baseball/      # Core modules
+├── ncaa-baseball.cabal    # Project configuration
+├── flake.nix             # Nix configuration
+└── README.md             # This file
+```
+
+## Development
+
+### Prerequisites
+If not using Nix:
+- GHC 9.6 or later
+- Cabal 3.0 or later
+- SQLite3
+
+Using Nix automatically provides all required dependencies.
+
+### Development Shell
+The Nix development shell includes:
+- GHC with all dependencies
+- Cabal
+- Haskell Language Server
+- SQLite
+
+## Acknowledgments
+
+- Data provided by [NCAA Statistics](https://stats.ncaa.org)
